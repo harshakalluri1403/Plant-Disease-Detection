@@ -1,72 +1,90 @@
+<div align="center">
+
 # Plant Disease Detection
 
-## Overview
-This project outlines the technical design and implementation of a plant disease detection system. The system features a web-based interface built with Streamlit, enabling real-time image upload capabilities and additional functionalities such as pesticide recommendations and geolocation services.
+### Snap a leaf, name the disease, get a treatment — a Streamlit app over a MobileNetV2 classifier
 
-![Main Web Page for Plant Disease Detection](https://github.com/harshakalluri1403/Plant-Disease-/blob/f062944841173afcb8e4a01698141862432f0fe4/Readme/Screenshot%202024-08-12%20085225.png)  <!-- Replace with your image path -->
+![Python](https://img.shields.io/badge/python-3.x-3776AB?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-app-FF4B4B?logo=streamlit&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-Keras-FF6F00?logo=tensorflow&logoColor=white)
+![Models](https://img.shields.io/badge/models-MobileNetV2%20·%20ResNet50%20·%20VGG16-6f42c1)
+![Dataset](https://img.shields.io/badge/data-PlantVillage-2ea44f)
+![Status](https://img.shields.io/badge/status-research%20project-lightgrey)
 
-## 1. Web Application Framework (Streamlit)
-The web application for plant disease detection is developed using Streamlit, a Python-based framework known for its ease of use and rapid prototyping capabilities. Streamlit allows for the creation of interactive, user-friendly web applications with minimal effort. The app provides a streamlined interface for farmers and agricultural experts to upload images of tomato leaves and receive real-time predictions of possible diseases.
+[What it does](#what-it-does) ·
+[The models](#the-models) ·
+[Run it](#run-it) ·
+[Paper](#research-paper)
 
-### Features of Streamlit in this project:
-- **Interactive Widgets**: Used for image uploads and capturing images via webcam.
-- **Real-Time Predictions**: Immediate feedback to users upon uploading an image, with the ability to diagnose the disease within seconds.
-- **Clean UI/UX**: The use of Streamlit ensures a responsive design, with simple and clear instructions guiding the user through the process of uploading images and receiving recommendations.
+</div>
 
-The lightweight nature of Streamlit allows the application to be run on various devices, including desktop computers and mobile devices, making it accessible to a wide range of users.
+---
 
-## 2. Real-Time Image Upload and Disease Diagnosis
-![Uploading the Image to the Main Page from Local Folder](https://github.com/harshakalluri1403/Plant-Disease-/blob/f062944841173afcb8e4a01698141862432f0fe4/Readme/Screenshot%202024-08-12%20090532.png)  <!-- Replace with your image path -->
+A farmer photographs a sick tomato leaf; seconds later the app names the
+disease, recommends a pesticide, and maps the nearest plant doctor, pesticide
+store and nursery. The classifier behind it is a **MobileNetV2** fine-tuned on
+the [PlantVillage](https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset)
+leaf dataset, with ResNet50 and VGG16 trained alongside it for comparison.
 
-One of the core functionalities of the web application is the ability to upload images of tomato leaves and receive real-time disease predictions. This feature allows users to:
+<p align="center">
+<img src="Readme/Screenshot%202024-08-12%20085225.png" width="80%" alt="Plant Disease Detection home page">
+</p>
 
-- **Upload Images**: Users can upload an image from their device, which is then resized and preprocessed to fit the input requirements of the deep learning models (MobileNetV2, ResNet50, and VGG16).
-- **Real-Time Diagnosis**: After uploading, the image is fed through the pre-trained model, which predicts the disease associated with the plant leaf. The prediction process takes only a few seconds, ensuring minimal delay between the image upload and disease diagnosis.
-- **Disease Prediction Results**: The predicted disease, along with a confidence score, is displayed to the user. Based on the prediction, the application provides recommendations for treatment, including appropriate pesticides.
-- **Webcam Image Capture**: For real-time usage in the field, the app includes a "Capture Image" feature that allows users to take a photo using their webcam. This image is processed in the same manner as an uploaded image.
+## What it does
 
-### Steps of Real-Time Processing:
-1. Image upload or capture via webcam.
-2. Image preprocessing: resizing, normalization, and format conversion.
-3. Feeding the preprocessed image into the trained model.
-4. Displaying the predicted disease and appropriate pesticide recommendations.
+| Step | What happens |
+| :--- | :--- |
+| **1. Capture** | Upload a leaf photo or snap one with the webcam |
+| **2. Diagnose** | The image is resized to 256×256, preprocessed, and classified in a few seconds |
+| **3. Recommend** | The predicted disease is matched to a pesticide from [`pesticide.xlsx`](pesticide.xlsx) |
+| **4. Locate** | A Folium map shows nearby plant doctors, pesticide stores and nurseries |
 
-## 3. Additional Features (Pesticide Recommendations, Geolocation Services)
-![Displaying Nearby Plant Doctors](https://github.com/harshakalluri1403/Plant-Disease-/blob/f062944841173afcb8e4a01698141862432f0fe4/Readme/Screenshot%202024-08-12%20090640.png)  <!-- Replace with your image path -->
+<p align="center">
+<img src="Readme/Screenshot%202024-08-12%20090532.png" width="46%" alt="Uploading a leaf image">
+<img src="Readme/Screenshot%202024-08-12%20091010.png" width="46%" alt="Prediction and pesticide recommendation">
+</p>
+<p align="center">
+<img src="Readme/Screenshot%202024-08-12%20090640.png" width="80%" alt="Map of nearby plant doctors">
+</p>
 
-Beyond disease diagnosis, the application provides several additional features aimed at offering comprehensive support to users, including pesticide recommendations and geolocation services.
+## The models
 
-- **Pesticide Recommendations**: After predicting the disease, the application suggests suitable pesticides from a pre-defined dataset. The recommendations are based on the predicted disease label and provide users with actionable insights on how to treat the plant.
-- **Geolocation Services**:
-  - **Plant Doctors**: A map is provided that shows the locations of nearby plant doctors who can offer expert advice on plant health.
-  - **Pesticide Stores**: The app allows users to locate stores where the recommended pesticides can be purchased.
-  - **Plant Nurseries**: The app provides information on nearby plant nurseries, helping users find and purchase healthy plants.
+Three architectures were trained and compared across epoch budgets
+(100 / 200 / 500 / 1000), with accuracy and loss curves saved per run:
 
-These features are implemented using Folium, a Python library for creating interactive maps, enabling users to explore their surrounding areas and access necessary resources related to plant health.
+| Model | Role | Where |
+| :--- | :--- | :--- |
+| **MobileNetV2** | Lightweight model served by the app | [`train_function.py`](train_function.py), [`plant_disease_detection.py`](plant_disease_detection.py) |
+| **ResNet50** | Deeper comparison (PyTorch + TensorFlow) | [`Resnet/`](Resnet/) |
+| **VGG16** | Baseline comparison, per-epoch plots | [`vgg16/`](vgg16/) |
 
-## 4. Results and Discussion
-![Predicting the Disease and Recommending Suitable Pesticides](https://github.com/harshakalluri1403/Plant-Disease-/blob/f062944841173afcb8e4a01698141862432f0fe4/Readme/Screenshot%202024-08-12%20091010.png)  <!-- Replace with your image path -->
+Training curves live in [`vgg16/`](vgg16/) (`accuracy_comparison.png`,
+`loss_comparison.png`) and the per-run logs/CSVs beside them.
 
-This section discusses the performance of three deep learning models—VGG16, MobileNetV2, and ResNet50—in the task of tomato plant disease detection. It also analyzes the results across different epochs and assesses the overall system performance and user experience.
+## Run it
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/plant-disease-detection.git
-   cd plant-disease-detection
-   ```
-2. Install the required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-## Usage
-1. Run the Streamlit application:
-   ``` bash
-   streamlit run app.py
-   ```
-2. Open your web browser and go to http://localhost:8501.
+```bash
+git clone https://github.com/harshakalluri1403/Plant-Disease-Detection.git
+cd Plant-Disease-Detection
 
-## Research Paper Contributed to IIIT Kurnool
+pip install streamlit tensorflow opencv-python pillow pandas numpy folium streamlit-folium openpyxl
 
-[Predicting the Disease and Recommending Suitable Pesticides](https://raw.githubusercontent.com/harshakalluri1403/Plant-Disease-/main/Plantdisease.pdf)
+streamlit run plant_disease_detection.py
+```
 
+Then open http://localhost:8501.
+
+> **Before running:** `plant_disease_detection.py` loads the trained model from a
+> hard-coded path (`model_file = '.../model_6.h5'`). Point it at your own trained
+> `.h5` model — train one with [`train_function.py`](train_function.py) on the
+> PlantVillage dataset, or drop in an existing checkpoint.
+
+## Research paper
+
+This work was written up as a paper in collaboration with **IIIT Kurnool** —
+[Plantdisease.pdf](Plantdisease.pdf).
+
+## Tech stack
+
+Streamlit · TensorFlow / Keras · MobileNetV2 · ResNet50 · VGG16 · OpenCV ·
+Folium · pandas
