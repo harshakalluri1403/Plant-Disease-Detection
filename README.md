@@ -10,6 +10,7 @@
 ![Models](https://img.shields.io/badge/models-MobileNetV2%20·%20ResNet50%20·%20VGG16-6f42c1)
 ![Dataset](https://img.shields.io/badge/data-PlantVillage-2ea44f)
 ![Status](https://img.shields.io/badge/status-research%20project-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
 [What it does](#what-it-does) ·
 [The models](#the-models) ·
@@ -88,3 +89,7 @@ This work was written up as a paper in collaboration with **IIIT Kurnool** —
 
 Streamlit · TensorFlow / Keras · MobileNetV2 · ResNet50 · VGG16 · OpenCV ·
 Folium · pandas
+
+## License
+
+Released under the [MIT License](LICENSE).
